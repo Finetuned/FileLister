@@ -158,7 +158,12 @@ foreach (new DirectoryIterator($curPath) as $file) {
     $key = $fileLister->makeKey($filePath);
 
     $fileArray = array();
-    $fileArray['filename'] = $file->getFilename();
+ 	$hideFileSuffix= $modx->getOption('hideFileSuffix',$scriptProperties,'');
+	if (!empty($hideFileSuffix)){
+		$fileArray['filename'] = pathinfo($file->getPathname(),PATHINFO_FILENAME); // $file->getFilename();
+	} else {
+		$fileArray['filename'] =  $file->getFilename();
+	}
     $fileArray['bytesize'] = $file->getSize();
     $fileArray['filesize'] = $fileLister->formatBytes($file->getSize());
     $fileArray['path'] = str_replace('\\', '/', $file->getPathname());
@@ -175,7 +180,8 @@ foreach (new DirectoryIterator($curPath) as $file) {
             'filename' => $fileArray['filename'],
         ));
     } else {
-        $fileArray['link'] = $fileArray['filename'];
+       // $fileArray['link'] = $fileArray['filename'];
+	    $fileArray['link'] = pathinfo($fileArray['path'],PATHINFO_BASENAME);
     }
     /* if resource is a file */
     if ($file->isFile() && $showFiles) {
